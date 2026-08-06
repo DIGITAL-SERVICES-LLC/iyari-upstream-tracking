@@ -546,7 +546,7 @@ def recommended_update_command_for_method(method: str) -> str:
         return _NIX_UPDATE_MSG
     if method == "docker":
         return "docker pull nousresearch/hermes-agent:latest"
-    return "iyari update"
+    return "hermes update"
 
 
 def recommended_update_command() -> str:
@@ -5288,7 +5288,7 @@ def config_command(args):
         print("  hermes config get <key>          Print a resolved config value")
         print("  hermes config set <key> <value>   Set a config value")
         print("  hermes config unset <key>        Remove a config value")
-        print("  iyari config check     Check for missing/outdated config")
+        print("  hermes config check     Check for missing/outdated config")
         print("  hermes config migrate   Update config with new options")
         print("  hermes config path      Show config file path")
         print("  hermes config env-path  Show .env file path")

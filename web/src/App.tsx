@@ -969,7 +969,7 @@ function SidebarSystemActions({
       const n = updateConfirmInfo.behind;
       return `This will run 'hermes update' (${cmd}) and pull ${n} new commit${n === 1 ? "" : "s"}. The gateway restarts when the update finishes; the current session keeps its prompt cache until then.`;
     }
-    const cmd = updateConfirmInfo?.update_command ?? "iyari update";
+    const cmd = updateConfirmInfo?.update_command ?? "hermes update";
     return (
       t.status.updateHermesConfirmMessage ??
       `This will run 'hermes update' (${cmd}) and restart the gateway when it finishes.`
