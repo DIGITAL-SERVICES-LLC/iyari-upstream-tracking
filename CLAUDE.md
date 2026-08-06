@@ -11,6 +11,19 @@ Hermes/Nous Research → IYARI/Digital Services LLC, **SALVO** lo funcional/lega
 
 - URLs `nousresearch.com` (y subdominios, p.ej. `hermes-agent.nousresearch.com`) — romperían llamadas.
 - Comando y paquete `hermes` en **minúscula** (`hermes model`, `hermes-agent`, `hermes-gateway`, `hermes_cli`…).
+  **El binario real instalado sigue siendo `hermes`** (`pyproject.toml`
+  `[project.scripts]`: solo `hermes`/`hermes-agent`/`hermes-acp`, NO existe
+  `iyari` como comando). Un alias personal de shell (`alias iyari=".../hermes"`)
+  en la máquina de un desarrollador **no cuenta** — no está en el repo, no lo
+  tiene un usuario nuevo. Encontrado como regresión real en `hermes_cli/tips.py`
+  (~60 tips de CLI), `recommended_update_command_for_method()`, y los mensajes
+  de confirmación de actualización del dashboard (`web/src/App.tsx`,
+  `SystemPage.tsx`) — un commit local cambió `"hermes update"` literal a
+  `"iyari update"`, rompiendo copiar/pegar y el mensaje del dashboard
+  ("command not found: iyari") hasta que se revirtió (2026-08-06,
+  `a466f9d7e`). El rename real del comando a `iyari` es una fase futura
+  coordinada con un `install.sh` que cree el alias para todos los usuarios —
+  no antes, y no archivo por archivo.
 - Paths `~/.hermes/` y env vars `HERMES_*` (funcionales).
 - **Headers HTTP `X-Hermes-*`** (`X-Hermes-Session-Token`, `X-Hermes-Session-Id`,
   `X-Hermes-Session-Key`, `X-Hermes-Sidecar-Token`, `X-Hermes-Completed`,
