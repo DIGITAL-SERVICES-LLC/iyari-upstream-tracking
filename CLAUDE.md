@@ -1,7 +1,17 @@
+## ⚠️ Este es el repo de SEGUIMIENTO de upstream, no el del producto
+
+El producto MVP se construye en digital-services-llc/iyari (repo
+independiente desde 2026-08-07, sin sincronización automática con este).
+Este repo sigue existiendo para vigilar cambios de
+NousResearch/hermes-agent con la cadencia semanal ya documentada más abajo
+— no despliegues nada de aquí a producción de clientes.
+
+---
+
 # IYARI — Rebranding Hermes → IYARI (GRUPO 5: docs)
 
 Fork de Hermes/Nous Research. Marca del producto: **IYARI** (Digital Services LLC).
-Repo: `DIGITAL-SERVICES-LLC/iyari`, rama `main` (commit directo a main).
+Repo: `DIGITAL-SERVICES-LLC/iyari-upstream-tracking`, rama `main` (commit directo a main).
 Idioma de trabajo con el usuario: **español**.
 
 ## Criterio GRUPO 5 — "docs manda, es fork"
