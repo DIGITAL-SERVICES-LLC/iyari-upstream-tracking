@@ -31,6 +31,7 @@ from hermes_state import (
 ProgressCallback = Callable[[dict[str, Any]], None]
 
 _CANONICAL_TABLES = (
+    "system_prompts",
     "sessions",
     "messages",
     "session_model_usage",

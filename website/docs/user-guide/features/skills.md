@@ -640,17 +640,7 @@ A third-party skills marketplace integrated as a community source.
 - Site: [clawhub.ai](https://clawhub.ai/)
 - IYARI source id: `clawhub`
 
-#### 6. Claude marketplace-style repos (`claude-marketplace`)
-
-IYARI supports marketplace repos that publish Claude-compatible plugin/marketplace manifests.
-
-Known integrated sources include:
-- [anthropics/skills](https://github.com/anthropics/skills)
-- [aiskillstore/marketplace](https://github.com/aiskillstore/marketplace)
-
-IYARI source id: `claude-marketplace`
-
-#### 7. LobeHub (`lobehub`)
+#### 6. LobeHub (`lobehub`)
 
 IYARI can search and convert agent entries from LobeHub's public catalog into installable IYARI skills.
 
@@ -659,7 +649,7 @@ IYARI can search and convert agent entries from LobeHub's public catalog into in
 - Backing repo: [lobehub/lobe-chat-agents](https://github.com/lobehub/lobe-chat-agents)
 - IYARI source id: `lobehub`
 
-#### 8. browse.sh (`browse-sh`)
+#### 7. browse.sh (`browse-sh`)
 
 IYARI integrates with [browse.sh](https://browse.sh), Browserbase's catalog of 200+ site-specific browser-automation SKILL.md files (Airbnb, Amazon, arXiv, 12306.cn, Etsy, Xero, and many more). Each skill describes how to drive one website end-to-end and is suitable for use with IYARI's browser tools and any browser-automation skills you already have installed.
 
@@ -676,7 +666,7 @@ hermes skills install browse-sh/airbnb.com/search-listings-ddgioa
 
 Identifiers use the form `browse-sh/<hostname>/<task-id>` and match the slug exposed by the browse.sh catalog. Content is resolved through the per-skill detail endpoint (`/api/skills/<slug>` → `skillMdUrl`), not through the catalog's GitHub `sourceUrl`.
 
-#### 9. Direct URL (`url`)
+#### 8. Direct URL (`url`)
 
 Install `SKILL.md` directly from any HTTP(S) URL — useful when an author hosts a skill on their own site (no hub listing, no GitHub path to type). IYARI also fetches explicitly referenced files under `references/`, `templates/`, `scripts/`, `assets/`, and `examples/`, then scans and installs the complete bundle.
 
@@ -822,7 +812,7 @@ hermes skills install my-org/hermes-skills/deploy-runbook
 
 #### Non-default paths
 
-If your skills don't live under `skills/` (common when you're adding a `skills/` subtree to an existing project), edit the tap entry in `~/.hermes/.hub/taps.json`:
+If your skills don't live under `skills/` (common when you're adding a `skills/` subtree to an existing project), edit the tap entry in `~/.hermes/skills/.hub/taps.json`:
 
 ```json
 {
@@ -864,7 +854,7 @@ Inside a running session:
 /skills tap remove myorg/skills-repo
 ```
 
-Taps are stored in `~/.hermes/.hub/taps.json` (created on demand).
+Taps are stored in `~/.hermes/skills/.hub/taps.json` (created on demand).
 
 ## Bundled skill updates (`hermes skills reset`)
 

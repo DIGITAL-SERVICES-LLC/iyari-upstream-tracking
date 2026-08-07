@@ -21,6 +21,7 @@ sidebar_position: 1
 | **Anthropic** | `hermes model`（Claude Max + 额外用量积分，通过 OAuth；也支持 Anthropic API key 或手动 setup-token——见下方说明） |
 | **OpenRouter** | `~/.hermes/.env` 中的 `OPENROUTER_API_KEY` |
 | **NovitaAI** | `~/.hermes/.env` 中的 `NOVITA_API_KEY`（provider: `novita`，200+ 模型，Model API、Agent Sandbox、GPU Cloud） |
+| **AI Gateway** | `~/.hermes/.env` 中的 `AI_GATEWAY_API_KEY`（provider: `ai-gateway`） |
 | **z.ai / GLM** | `~/.hermes/.env` 中的 `GLM_API_KEY`（provider: `zai`） |
 | **Kimi / Moonshot** | `~/.hermes/.env` 中的 `KIMI_API_KEY`（provider: `kimi-coding`） |
 | **Kimi / Moonshot（中国）** | `~/.hermes/.env` 中的 `KIMI_CN_API_KEY`（provider: `kimi-coding-cn`；别名：`kimi-cn`、`moonshot-cn`） |
@@ -52,7 +53,7 @@ sidebar_position: 1
 
 ### Nous Portal
 
-[Nous Portal](https://portal.nousresearch.com) 是 Nous Research 的统一订阅网关，也是**运行 IYARI 的推荐方式**。一次 OAuth 登录即可访问 300+ 前沿智能体模型（Claude、GPT、Gemini、DeepSeek、Qwen、Kimi、GLM、MiniMax、Grok 等），以及 [Tool Gateway](/user-guide/features/tool-gateway)（网页搜索、图像生成、TTS、浏览器自动化）和 [Nous Chat](https://chat.nousresearch.com)——费用从你的 Nous 订阅中扣除，无需单独管理各提供商账户。
+[Nous Portal](https://portal.nousresearch.com) 是 Nous Research 的统一订阅网关，也是**运行 IYARI 的推荐方式**。一次 OAuth 登录即可访问 300+ 前沿智能体模型（Claude、GPT、Gemini、DeepSeek、Qwen、Kimi、GLM、MiniMax、Grok 等）以及 [Tool Gateway](/user-guide/features/tool-gateway)（网页搜索、图像生成、TTS、浏览器自动化）——费用从你的 Nous 订阅中扣除，无需单独管理各提供商账户。
 
 ```bash
 hermes setup --portal     # 全新安装——一条命令完成 OAuth + 提供商 + 网关配置
@@ -683,7 +684,7 @@ hermes model
 | `--enable-auto-tool-choice` | `tool_choice: "auto"` 所必需（IYARI 的默认值） |
 | `--tool-call-parser <name>` | 模型工具调用格式的解析器 |
 
-支持的解析器：`hermes`（Qwen 2.5、Hermes 2/3）、`llama3_json`（Llama 3.x）、`mistral`、`deepseek_v3`、`deepseek_v31`、`xlam`、`pythonic`。没有这些标志，工具调用将无法工作——模型会将工具调用以文本形式输出。
+支持的解析器：`hermes`（Qwen 2.5、IYARI 2/3）、`llama3_json`（Llama 3.x）、`mistral`、`deepseek_v3`、`deepseek_v31`、`xlam`、`pythonic`。没有这些标志，工具调用将无法工作——模型会将工具调用以文本形式输出。
 
 :::tip
 vLLM 支持人类可读的大小：`--max-model-len 64k`（小写 k = 1000，大写 K = 1024）。
@@ -756,7 +757,7 @@ hermes model
 :::caution `--jinja` 是工具调用的必要条件
 没有 `--jinja`，llama-server 会完全忽略 `tools` 参数。模型会尝试在响应文本中写入 JSON 来调用工具，但 IYARI 不会将其识别为工具调用——你会看到原始 JSON（如 `{"name": "web_search", ...}`）作为消息打印出来，而不是实际执行搜索。
 
-原生工具调用支持（最佳性能）：Llama 3.x、Qwen 2.5（包括 Coder）、Hermes 2/3、Mistral、DeepSeek、Functionary。其他所有模型使用通用处理器，可以工作但效率可能较低。完整列表参见 [llama.cpp 函数调用文档](https://github.com/ggml-org/llama.cpp/blob/master/docs/function-calling.md)。
+原生工具调用支持（最佳性能）：Llama 3.x、Qwen 2.5（包括 Coder）、IYARI 2/3、Mistral、DeepSeek、Functionary。其他所有模型使用通用处理器，可以工作但效率可能较低。完整列表参见 [llama.cpp 函数调用文档](https://github.com/ggml-org/llama.cpp/blob/master/docs/function-calling.md)。
 
 可通过检查 `http://localhost:8080/props` 验证工具支持是否已激活——`chat_template` 字段应存在。
 :::
@@ -804,11 +805,11 @@ IYARI 会自动以 64K 上下文长度加载 LM Studio 模型。
 设置每个模型的持久默认值：我的模型标签页 → 模型上的齿轮图标 → 设置上下文大小。
 :::
 
-**工具调用：** 自 LM Studio 0.3.6 起支持。具有原生工具调用训练的模型（Qwen 2.5、Llama 3.x、Mistral、Hermes）会被自动检测并显示工具徽章。其他模型使用通用回退，可靠性可能较低。
+**工具调用：** 自 LM Studio 0.3.6 起支持。具有原生工具调用训练的模型（Qwen 2.5、Llama 3.x、Mistral、IYARI）会被自动检测并显示工具徽章。其他模型使用通用回退，可靠性可能较低。
 
 ---
 
-### WSL2 网络（Windows 用户）
+### WSL2 网络（Windows 用户） {#wsl2-networking-windows-users}
 
 由于 IYARI 需要 Unix 环境，Windows 用户在 WSL2 内运行它。如果你的模型服务器（Ollama、LM Studio 等）运行在 **Windows 主机**上，需要桥接网络——WSL2 使用具有独立子网的虚拟网络适配器，因此 WSL2 内的 `localhost` 指向 Linux 虚拟机，**而非** Windows 主机。
 

@@ -124,6 +124,8 @@ def test_routed_client_preserves_openai_sdk_custom_headers(mock_openai):
 
 
 
+
+
 @patch("run_agent.OpenAI")
 def test_openrouter_headers_include_response_cache_when_enabled(mock_openai):
     """When openrouter.response_cache is True, the cache header is injected."""

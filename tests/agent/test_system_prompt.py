@@ -150,10 +150,7 @@ def test_coding_prompt_preserves_legacy_workspace_order(monkeypatch):
         "this one. Do not modify another profile's skills/plugins/cron/memories "
         "unless the user explicitly directs you to."
     )
-    from agent.meta_prompt import load_meta_prompt_base
-
     expected = "\n\n".join((
-        load_meta_prompt_base(),
         "IDENTITY",
         "HELP",
         "STEER",
@@ -185,10 +182,7 @@ def test_coding_prompt_preserves_legacy_workspace_order(monkeypatch):
         prompt = build_system_prompt(agent, system_message="SYSTEM_MESSAGE")
 
     assert prompt == expected
-    # +1 segment vs. upstream's original slice: our meta-prompt (Fase 1.1)
-    # is prepended ahead of IDENTITY/HELP/STEER/CODING_STABLE and is part of
-    # the cross-session-stable prefix too.
-    assert agent._cached_system_prompt_static == "\n\n".join(expected.split("\n\n")[:5])
+    assert agent._cached_system_prompt_static == "\n\n".join(expected.split("\n\n")[:4])
 
 
 class TestTelegramRichMessagesHint:
@@ -232,3 +226,43 @@ class TestTelegramRichMessagesHint:
             stable = _stable_prompt(agent)
         assert "Standard Markdown is automatically converted" in stable
         assert "lean into it" not in stable
+
+
+_SKILLS = "SKILLS_INDEX_SENTINEL"
+_CONTEXT = "CONTEXT_FILES_SENTINEL"
+
+
+def _build(builder, **overrides):
+    """Run a build_* function with skills + context files present."""
+    agent = _make_agent(valid_tool_names=["skills_list"], **overrides)
+    with (
+        patch("run_agent.load_soul_md", return_value=""),
+        patch("run_agent.build_nous_subscription_prompt", return_value=""),
+        patch("run_agent.build_environment_hints", return_value=""),
+        patch("run_agent.build_context_files_prompt", return_value=_CONTEXT),
+        patch("run_agent.get_toolset_for_tool", return_value=None),
+        patch("run_agent.build_skills_system_prompt", return_value=_SKILLS),
+    ):
+        return builder(agent)
+
+
+class TestSkillsInVolatileBand:
+    """The skills index is runtime-mutable, so it lives in the volatile band,
+    not the stable band, to keep the cached stable prefix reusable when a
+    rebuild picks up a skill change."""
+
+    def test_skills_not_in_stable_band(self):
+        parts = _build(build_system_prompt_parts)
+        assert _SKILLS not in parts["stable"]
+
+    def test_skills_lead_the_volatile_band(self):
+        parts = _build(build_system_prompt_parts)
+        assert parts["volatile"].startswith(_SKILLS)
+
+    def test_full_order_is_stable_context_then_skills(self):
+        # build_system_prompt joins stable + context + volatile, so the skills
+        # index renders after the context files and before the per-turn
+        # memory/timestamp tail.
+        full = _build(build_system_prompt)
+        assert full.index(_CONTEXT) < full.index(_SKILLS)
+        assert full.index(_SKILLS) < full.index("Conversation started:")

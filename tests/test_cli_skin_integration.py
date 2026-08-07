@@ -81,7 +81,8 @@ class TestCliSkinPromptIntegration:
 
 
 class TestCompactBannerSkinIntegration:
-    def test_poseidon_compact_banner_uses_skin_branding_instead_of_default(self):
+
+    def test_poseidon_compact_banner_uses_skin_branding_instead_of_nous_hermes(self):
         set_active_skin("poseidon")
 
         with patch("cli.shutil.get_terminal_size", return_value=SimpleNamespace(columns=90)), \
