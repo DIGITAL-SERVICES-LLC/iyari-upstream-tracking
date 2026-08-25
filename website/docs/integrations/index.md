@@ -34,7 +34,7 @@ The `web_search` and `web_extract` tools support eight backend providers, config
 | **SearXNG** | `SEARXNG_URL` | ✔ | — | — |
 | **Brave** (free tier) | `BRAVE_SEARCH_API_KEY` | ✔ | — | — |
 | **DuckDuckGo** (ddgs) | _(none)_ | ✔ | — | — |
-| **Tavily** | `TAVILY_API_KEY` | ✔ | ✔ | ✔ |
+| **Tavily** | `TAVILY_API_KEY` (optional) | ✔ | ✔ | — |
 | **Exa** | `EXA_API_KEY` | ✔ | ✔ | — |
 | **Parallel** | `PARALLEL_API_KEY` | ✔ | ✔ | — |
 | **xAI** | `XAI_API_KEY` | ✔ | — | — |
@@ -46,7 +46,7 @@ web:
   backend: firecrawl    # firecrawl | searxng | brave-free | ddgs | tavily | exa | parallel | xai
 ```
 
-If `web.backend` is not set, the backend is auto-detected from whichever API key is available. Self-hosted Firecrawl is also supported via `FIRECRAWL_API_URL`.
+If `web.backend` is not set, the backend is auto-detected from whichever API key is available. Self-hosted Firecrawl is also supported via `FIRECRAWL_API_URL`. Selecting Tavily in `hermes tools` works without a key.
 
 ## Browser Automation
 
@@ -95,9 +95,23 @@ IYARI runs as a gateway bot on 27+ messaging platforms, all configured through t
 
 See the [Messaging Gateway overview](/user-guide/messaging) for the platform comparison table and setup guide.
 
+### Quick connect links
+
+The big platforms have a canonical "create your bot/app" URL, and some accept parameters that pre-open the right form. Skip the console-hunting and go straight there:
+
+| Platform | Direct link | What it opens |
+|----------|-------------|---------------|
+| **Telegram** | [t.me/BotFather](https://t.me/BotFather) | Chat with BotFather — send `/newbot` to mint a bot token |
+| **Discord** | [discord.com/developers/applications?new_application=true](https://discord.com/developers/applications?new_application=true) | Developer Portal with the **New Application** dialog pre-opened |
+| **Slack** | [api.slack.com/apps?new_app=1](https://api.slack.com/apps?new_app=1) | The **Create New App** dialog — pick *From an app manifest* and paste the manifest `hermes slack manifest --agent-view` generates |
+| **LINE** | [developers.line.biz/console](https://developers.line.biz/console/) | LINE Developers Console for creating a Messaging API channel |
+| **Feishu/Lark** | [open.feishu.cn/app](https://open.feishu.cn/app) | Feishu open-platform console for creating a custom app |
+
+Each platform's setup page walks through what to do once you're there.
+
 ## Collaboration Workspaces
 
-- **[Buzz](/integrations/buzz)** — Block's Nostr-based human+agent workspace. Three integration paths: Buzz Desktop spawns Hermes as a managed ACP runtime, the `buzz-acp` relay bridge hosts a Hermes identity server-side, or the native gateway platform joins Buzz channels with full Hermes memory/skills/approvals/cron. The overview page compares all three.
+- **[Buzz](/integrations/buzz)** — Block's Nostr-based human+agent workspace. Three integration paths: Buzz Desktop spawns IYARI as a managed ACP runtime, the `buzz-acp` relay bridge hosts a IYARI identity server-side, or the native gateway platform joins Buzz channels with full IYARI memory/skills/approvals/cron. The overview page compares all three.
 
 ## Home Automation
 

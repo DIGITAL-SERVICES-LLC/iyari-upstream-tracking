@@ -320,7 +320,7 @@ thread.
 
 Only the first token is checked against the known command list, so
 casual messages like `!nice work` pass through to the agent unchanged.
-The bang form also works behind a mention (`@Hermes !stop`) and with
+The bang form also works behind a mention (`@IYARI !stop`) and with
 leading whitespace — both dispatch as commands in threads.
 
 Approval prompts (dangerous command / `execute_code` approval) normally
@@ -336,9 +336,9 @@ channel. The "Running /cmd…" placeholder is replaced with the real reply; long
 replies are chunked into follow-up ephemeral messages. Slack caps the reply
 flow at 5 posts, so extremely long output is closed with an explicit
 truncation notice rather than silently dropped. If the primary ephemeral path
-fails, Hermes retries via a second ephemeral API path — a slash reply is never
+fails, IYARI retries via a second ephemeral API path — a slash reply is never
 posted publicly to the channel as a fallback. (Commands typed as regular
-messages — `!cmd` in threads, `@Hermes /cmd` — reply as normal visible
+messages — `!cmd` in threads, `@IYARI /cmd` — reply as normal visible
 messages instead.)
 
 ### Clarify prompts (one-tap buttons)
@@ -423,6 +423,12 @@ platforms:
       # Requires rich_blocks: true. Default: false.
       feedback_buttons: false
 
+      # Render live tool calls as Slack-native plan/task cards. This explicit
+      # opt-in activates native progress even when text tool_progress is off.
+      # If Slack rejects the native stream, IYARI keeps one editable text
+      # fallback current for the rest of the turn.
+      native_task_cards: false
+
       # Suggested prompts pinned at the top of Agent view's Messages tab.
       # Either a list of {title, message} rows, or a titled object:
       # {title: "Start here", prompts: [{title: "Plan", message: "..."}]}
@@ -434,8 +440,8 @@ platforms:
 
       # Accept messages posted by other Slack bots (default: "none").
       # "none" ignores bots, "mentions" accepts a bot message only when
-      # that message itself @mentions Hermes, and "all" accepts every
-      # other bot. Hermes always ignores its own bot user to prevent
+      # that message itself @mentions IYARI, and "all" accepts every
+      # other bot. IYARI always ignores its own bot user to prevent
       # self-echoes.
       allow_bots: "none"
 
@@ -454,9 +460,10 @@ platforms:
 | `platforms.slack.extra.reply_broadcast` | `false` | When `true`, thread replies are also posted to the main channel. Only the first chunk is broadcast. |
 | `platforms.slack.extra.rich_blocks` | `false` | When `true`, agent messages are rendered as [Block Kit](https://docs.slack.dev/block-kit/) blocks (headers, dividers, true nested lists, and native tables). A plain-text fallback is always sent. Tables over Slack's limits fall back to aligned monospace. No app reinstall required — it's a send-side change only. |
 | `platforms.slack.extra.feedback_buttons` | `false` | When `true` with `rich_blocks`, appends Slack-native feedback controls to final replies. |
+| `platforms.slack.extra.native_task_cards` | `false` | When `true`, renders live tool calls as Slack-native plan/task cards. This is an explicit progress opt-in independent of Slack's default `tool_progress: off`; native API failures fall back to one continuously edited text update. |
 | `platforms.slack.extra.suggested_prompts` | `[]` | Up to four `{title, message}` prompts for Agent/Assistant DM entry points; accepts either a list or `{title, prompts}`. |
 | `platforms.slack.extra.assistant_thread_titles` | `true` | When `true`, names Agent/Assistant DM threads from the first user message. |
-| `platforms.slack.extra.allow_bots` | `"none"` | Controls messages from other Slack bots: `"none"` ignores them, `"mentions"` accepts a bot message only when **that message itself** @mentions Hermes, and `"all"` accepts all of them. Use `"mentions"` for the safest bot-to-bot collaboration mode. See [Accepting messages from other bots](#accepting-messages-from-other-bots-allow_bots). |
+| `platforms.slack.extra.allow_bots` | `"none"` | Controls messages from other Slack bots: `"none"` ignores them, `"mentions"` accepts a bot message only when **that message itself** @mentions IYARI, and `"all"` accepts all of them. Use `"mentions"` for the safest bot-to-bot collaboration mode. See [Accepting messages from other bots](#accepting-messages-from-other-bots-allow_bots). |
 | `platforms.slack.extra.cron_continuable_surface` | `"thread"` | Delivery surface for [continuable cron jobs](../features/cron.md#flat-in-channel-continuation-slack). `"thread"` opens a dedicated thread per delivery (default); `"in_channel"` delivers flat into the channel timeline. Pair `in_channel` with `reply_in_thread: false` (and `require_mention: false`) so a plain channel reply continues the job. |
 
 The equivalent environment variable is `SLACK_ALLOW_BOTS=none|mentions|all`.
@@ -517,6 +524,54 @@ display:
 | Key | Default | Description |
 |-----|---------|-------------|
 | `display.live_status` | `"full"` | Live per-tool status line. `full` shows verb + argument preview; `verb` shows the verb only (keeps file paths and commands out of shared channels); `off` restores the static text. Requires the `assistant:write` scope, same as the static status line. |
+
+### Native Streaming (live-typing replies)
+
+Slack's [Agents & AI Apps](https://docs.slack.dev/ai/) feature ships a native
+streaming surface (`chat.startStream` / `chat.appendStream` /
+`chat.stopStream`) that renders the reply as a live-typing message — much
+smoother than the edit-based progressive updates used otherwise. When
+`streaming.enabled` is on (transport `auto` or `draft`), IYARI uses native
+streaming automatically wherever it's available:
+
+- The stream starts on the first frame and appends only deltas (the API is
+  append-only). The streamed message **is** the final message — IYARI seals
+  it via `chat.stopStream` instead of posting a duplicate final reply.
+- If your Slack app doesn't have the AI features enabled (or lacks the
+  `assistant:write` scope), the first failure is cached and IYARI falls back
+  to edit-based streaming with a single log warning naming the fix.
+- Opt-in Block Kit (`rich_blocks: true`) is applied to the sealed message,
+  same as the edit-based finalize path.
+
+No extra configuration is needed beyond enabling streaming:
+
+```yaml
+streaming:
+  enabled: true       # transport auto/draft lights up Slack native streaming
+```
+
+### Native Task Cards (live tool progress)
+
+With `platforms.slack.extra.native_task_cards: true`, live tool calls render
+as Slack-native **plan/task cards** (the same UI Slack's own AI features use)
+instead of text progress bubbles: one card per turn, one row per tool call,
+with per-task running/complete/error states updating in place.
+
+```yaml
+platforms:
+  slack:
+    extra:
+      native_task_cards: true
+```
+
+- This is an explicit progress opt-in — it works even though Slack's default
+  is `tool_progress: off` (text bubbles spam channels; native cards don't).
+- Concurrent calls to the same tool are correlated by real tool-call ID, so
+  parallel `web_search` calls each get their own row with the right status.
+- If the native stream can't start or update, IYARI falls back to a single
+  continuously edited text message so progress stays live for the turn.
+- The card stream is stopped exactly once when the turn finalizes, including
+  on interrupt/disconnect, so no dangling live indicator is left behind.
 
 ### Session Isolation
 
@@ -613,7 +668,7 @@ Rules of thumb: `strict_mention` is the broadest hammer; `thread_require_mention
 
 ### Accepting messages from other bots (`allow_bots`)
 
-By default Hermes ignores every message authored by another Slack bot or app (including Workflow Builder posts). For multi-agent workspaces — several Hermes instances or peer bots collaborating in one channel — opt in with `allow_bots`:
+By default IYARI ignores every message authored by another Slack bot or app (including Workflow Builder posts). For multi-agent workspaces — several IYARI instances or peer bots collaborating in one channel — opt in with `allow_bots`:
 
 ```yaml
 platforms:
@@ -632,9 +687,9 @@ How `mentions` mode gates:
 
 - A peer-bot message is accepted **only when the message itself contains a current `@mention` of this bot** — in its text or its Block Kit blocks. Thread history does not count: a bot having been mentioned earlier in the thread, replies to the bot's own messages, and active thread sessions do **not** admit later unmentioned peer-bot messages. This is deliberate — it is what breaks agent-to-agent ack/status loops.
 - Human messages are unaffected; normal mention gating applies to them.
-- Hermes always ignores its own messages, in every mode, to prevent self-echo loops.
+- IYARI always ignores its own messages, in every mode, to prevent self-echo loops.
 
-`mentions` is the recommended mode for bot-to-bot collaboration: each agent must explicitly summon the other per turn. Avoid `all` unless every peer bot's own reply policy is loop-safe — two bots that answer everything will answer each other forever. Detection covers labeled bot messages (`bot_id`, `subtype: bot_message`), app-originated events, and unlabeled bot *users* (probed via `users.info`), so peer Hermes agents are filtered consistently across workspaces.
+`mentions` is the recommended mode for bot-to-bot collaboration: each agent must explicitly summon the other per turn. Avoid `all` unless every peer bot's own reply policy is loop-safe — two bots that answer everything will answer each other forever. Detection covers labeled bot messages (`bot_id`, `subtype: bot_message`), app-originated events, and unlabeled bot *users* (probed via `users.info`), so peer IYARI agents are filtered consistently across workspaces.
 
 For strict multi-bot deployments, pair with `require_mention: true` and `strict_mention: true` — see the smoke-check profile below.
 
@@ -815,7 +870,7 @@ Cron jobs (see the [cron guide](../features/cron.md#delivery-options)) can targe
 | `slack:C0123456789` | A specific channel by ID |
 | `slack:U0123456789` | That user's **DM** — the bare user ID is resolved to a DM conversation automatically (requires the `im:write` scope) |
 
-Delivery works even when the cron process isn't co-located with the gateway — Hermes falls back to a standalone Web API sender using `SLACK_BOT_TOKEN`. `MEDIA:` attachments in the cron output are uploaded as native Slack file shares to the same target.
+Delivery works even when the cron process isn't co-located with the gateway — IYARI falls back to a standalone Web API sender using `SLACK_BOT_TOKEN`. `MEDIA:` attachments in the cron output are uploaded as native Slack file shares to the same target.
 
 ### Sending messages and media (`send_message`)
 

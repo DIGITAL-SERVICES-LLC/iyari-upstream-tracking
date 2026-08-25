@@ -12,6 +12,7 @@ import time
 from unittest.mock import AsyncMock, MagicMock, patch
 from gateway.platforms.api_server import ThreadSafeAsyncQueue
 
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -356,6 +357,13 @@ class TestSSEAgentFailureFinishReason:
         assert "error" in finish
         assert "data: [DONE]" in sse
 
+    def test_failed_result_dict_reports_error_not_stop(self):
+        async def failed():
+            return (
+                {"final_response": "", "failed": True, "completed": False,
+                 "error": "upstream model 500"},
+                {"input_tokens": 5, "output_tokens": 0, "total_tokens": 5},
+            )
 
         reason, finish, _ = self._run(failed)
         assert reason == "error"

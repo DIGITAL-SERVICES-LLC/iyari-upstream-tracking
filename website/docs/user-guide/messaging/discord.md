@@ -775,7 +775,7 @@ discord:
 
 Notes:
 - Set `voice_channel_inactivity_timeout_seconds: 0` if you want the bot to remain in the voice channel until an explicit `/voice leave` or manual disconnect. The default preserves the historical 300-second idle auto-leave.
-- `voice_playback_timeout_seconds` is a floor, not a hard cap for long TTS. Hermes probes the generated audio duration and waits for `duration + 30s` when that is longer than the configured floor.
+- `voice_playback_timeout_seconds` is a floor, not a hard cap for long TTS. IYARI probes the generated audio duration and waits for `duration + 30s` when that is longer than the configured floor.
 - The acknowledgement fires at most once per turn, only when the bot is in a voice channel and the mixer is active. It uses your configured TTS provider.
 - `ambient_path` accepts any file `ffmpeg` can decode; it's looped seamlessly. Leave it empty to use the built-in synthesised pad (no asset needed).
 - All settings live in `config.yaml` (not `.env`) — they're behavioral, not secrets.
@@ -826,11 +826,17 @@ No Discord access policy configured; inbound Discord messages will be denied by 
 
 IYARI 0.18 intentionally fails closed on externally reachable adapters. A Discord bot with no `DISCORD_ALLOWED_USERS`, no `DISCORD_ALLOWED_ROLES`, no `DISCORD_ALLOWED_CHANNELS`, and no explicit allow-all flag will connect successfully but deny inbound users before normal message handling.
 
-### "Disallowed Intents" error on startup
+### "Privileged intents" / `PrivilegedIntentsRequired` error on startup
 
-**Cause**: Your code requests intents that aren't enabled in the Developer Portal.
+**Cause**: IYARI requests privileged Gateway Intents that are not enabled for your bot in the Developer Portal. Discord then rejects the WebSocket connection. IYARI always requests **Message Content Intent**. It also requests **Server Members Intent** when your allowlist uses usernames (not numeric IDs) or when `DISCORD_ALLOWED_ROLES` is set. Presence Intent is not required.
 
-**Fix**: Enable all three Privileged Gateway Intents (Presence, Server Members, Message Content) in the Bot settings, then restart.
+**Fix**:
+
+1. Go to [Developer Portal](https://discord.com/developers/applications) → your app → Bot → Privileged Gateway Intents.
+2. Enable **Message Content Intent** (required). Enable **Server Members Intent** if you use usernames or role allowlists.
+3. Click **Save Changes**, then restart the gateway (`hermes gateway restart`).
+
+The gateway log should name the exact intent(s) IYARI requested. Until they are enabled, Discord will keep rejecting the connection — this is a portal configuration error, not a flaky network issue.
 
 ### Bot can't see messages in a specific channel
 

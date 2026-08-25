@@ -390,3 +390,147 @@ en seco buscando explícitamente `^-.*X-Hermes` antes de aplicar. Ver también
 de clase heredados del código Python (`HermesCLI`, `HermesPlugin`,
 `HermesACPAgent`, `HermesTokenStorage`, `HermesSweEnv`, `HermesBench` — este
 último confirmado con el usuario como benchmark externo de Nous, no nuestro).
+
+---
+
+# Sync 2026-08-25 — upstream v0.20.0 → 0.20.5 (tag `v2026.8.19`)
+
+4.350 commits, 4.390 archivos, +604.516/-106.360 líneas. 105 conflictos / 181
+hunks (127 de marca, 54 de lógica). Casos NUEVOS decididos en este sync, para
+no re-deducirlos el próximo:
+
+## Casos nuevos: SE CONVIERTEN
+
+| Caso | Dónde apareció | Decisión | Precedente |
+|---|---|---|---|
+| `"X-Title": "Hermes Agent"` | `agent/anthropic_adapter.py` (x2), `hermes_cli/models.py` | → `"X-Title": "IYARI"` | `agent/auxiliary_client.py` y `plugins/image_gen/openrouter` ya usaban `"IYARI"` desde Fase 0.4 |
+| `| Author | Nous Research |` en fichas de skill | `website/docs/.../productivity-{pdf,docx,xlsx,powerpoint,google-workspace}.md` | → `Digital Services LLC` | `blender-mcp.md` (`... + IYARI`) y `skill-authoring.md` (`Author: IYARI`) |
+| `"You run on IYARI (by Nous Research)"` | `agent/prompt_builder.py:176` | → `by Digital Services LLC` | líneas 151/161 del mismo archivo ya lo decían así. **Regresión de identidad real**: upstream reintrodujo el sujeto en una constante nueva (`HERMES_AGENT_HELP_GUIDANCE_NO_SKILLS`) que se auto-mergeó sin conflicto |
+| "connects your **local** Hermes Agent" | `website/docs/guides/manage-hermes-cloud-with-mcp.md` | → `your local IYARI` (el agente local ES nuestro producto) | misma página ya decía "IYARI gets two tools" |
+
+## Casos nuevos: SE PRESERVAN
+
+| Caso | Por qué |
+|---|---|
+| `Hermes Cloud` + "runs hosted Hermes Agent instances" | Servicio de terceros de Nous (como Nous Portal). Las instancias que ejecuta Nous SON Hermes, no IYARI |
+| "you allow/authorize Nous Research to charge your card" (`hermes_cli/cli_billing_mixin.py`) | Factual: quien cobra en el flujo del Portal es Nous Research, no nosotros. Cambiarlo sería una afirmación falsa (mismo criterio que el gotcha de partnerships) |
+| `"Nous Research Hermes 3 & 4 models are NOT agentic..."` (`hermes_cli/model_switch.py`, `cli.py`) | Familia de modelos real + advertencia oficial del Portal |
+| `text.replace("Nous Research", "Anthropic")` (`agent/anthropic_adapter.py`) | Sanitizer del OAuth de Claude Code: **debe** contener el literal viejo Y `"Digital Services LLC"` (ambos están). No es marca, es una lista de limpieza |
+| `gateway.nousresearch.com`, `portal.nousresearch.com`, `hermes-agent.nousresearch.com`, `nousresearch.github.io` | URLs de servicio y de docs; romperían llamadas |
+| `website/static/oauth/client-metadata.json` (`client_uri`) | Metadata de cliente OAuth registrada; identificador funcional |
+| URLs a issues reales de upstream (`website/src/data/userStories.json`, `UserStoriesCollage`) | Referencias factuales a issues del repo de Nous |
+| `VOCAB = "IYARI, Teknium, Nous Research, kanban"` | Ejemplo de vocabulario de transcripción (Whisper); ya venía mezclado así |
+
+## Política de marca POR ZONA (medida sobre `origin/main`, no inventada)
+
+Se midió archivo por archivo cuántos tienen marca residual vs marca IYARI
+aplicada. El resultado confirma el criterio declarado en CLAUDE.md:
+
+```
+EXHAUSTIVA (se barre la marca nueva de upstream):
+  website/ (730 arch., 702 con IYARI)   locales/ (17/17)   config/ (2/2)
+DIFERIDA a GRUPO 7 (NO se toca; deuda declarada, ya era así antes del sync):
+  tests/ apps/ skills/ optional-skills/ ui-tui/ agent/ web/ tools/ gateway/
+  scripts/ tui_gateway/ docs/ .github/ cron/ docker/ optional-mcps/ evals/
+MIXTA (se decide por archivo con la regla de abajo):
+  plugins/ hermes_cli/ (raíz) acp_adapter/
+```
+
+**Regla por archivo aplicada en este sync** (más fina que la de zona, y la que
+hay que repetir): mirar la versión previa del archivo en `origin/main` —
+
+- tenía marca IYARI y **cero** residuo → política exhaustiva: barrer lo nuevo.
+- tenía IYARI **y** residuo → mixta: barrer si está en zona exhaustiva; si no,
+  decidir a mano (es donde vive el criterio semántico: ¿este "Hermes" es
+  nuestro producto o es el proyecto/servicio ajeno?).
+- **no** tenía IYARI → deuda diferida: no tocar (tocarlo rompe la coherencia
+  con los tests de esa zona, que comparan los literales).
+
+Resultado del sync: 131 archivos barridos (549 líneas), 882 diferidos.
+
+## Política de HEADERS DE ATRIBUCIÓN (resuelta con evidencia, sync 2026-08-25)
+
+Este fue el punto más delicado del sync. La regla no se dedujo: se leyó del
+propio repo. `origin/main:tests/run_agent/test_provider_attribution_headers.py`
+líneas 48 y 66 ya afirmaban `IYARI/` **antes** de este sync, y
+`agent/auxiliary_client.py` ya tenía `X-Title: "IYARI"` y
+`X-BILLING-INVOKE-ORIGIN: "IYARI"` desde Fase 0.4.
+
+**Regla:**
+
+| Header | Valor | Motivo |
+|---|---|---|
+| `X-Title` | `IYARI` | Es marca VISIBLE: OpenRouter/OpenCode lo muestran como nombre de la app en su dashboard |
+| `User-Agent` de proveedores (ai-gateway, routermint, fireworks, opencode-zen/free/go, gmi, xai, kimi-coding, anthropic, slack) | `IYARI/<ver>` | Coherencia con lo que el fork ya tenía; los tests del fork lo afirman |
+| `X-BILLING-INVOKE-ORIGIN` | `IYARI` | Ídem |
+| `codex_cli_rs/0.0.0 (IYARI)` | `IYARI` | El fork ya lo tenía así |
+
+**EXCEPCIÓN — familia codex (`_codex_cloudflare_headers` en
+`agent/auxiliary_client.py`):**
+
+| Header | Valor | Motivo |
+|---|---|---|
+| `User-Agent` | `HermesAgent/<ver>` | **Nueva de upstream**, el fork nunca la tuvo. Upstream la estandarizó con **19 asserts** en `tests/agent/test_codex_cloudflare_headers.py` y `test_codex_usage_attribution.py`. Es invisible al usuario y convertirla obliga a divergir en 19 asserts que conflictuarán en cada sync |
+| `originator` | `hermes-agent` | Identificador de protocolo que OpenAI reconoce (minúscula) |
+| `HTTP-Referer` | `https://hermes-agent.nousresearch.com` | URL de servicio |
+
+**Cómo se resolvió (repetir esto en el próximo sync):** no adivinar. Para cada
+header, mirar las 3 versiones —
+
+```bash
+grep -n '"X-Title"\|User-Agent' <archivo>                    # ahora
+git show origin/main:<archivo> | grep -n '"X-Title"\|User-Agent'   # politica del fork
+git show upstream/main:<archivo> | grep -n '"X-Title"\|User-Agent' # upstream
+```
+
+Si el fork ya lo tenía en IYARI → IYARI y se adapta el assert nuevo de upstream
+(1 línea). Si es nuevo de upstream y trae una batería de asserts → se sigue a
+upstream y se documenta aquí. **Y siempre correr los tests de atribución
+después**, porque código y test tienen que contar la misma historia:
+
+```bash
+pytest tests/agent/test_codex_cloudflare_headers.py \
+       tests/agent/test_codex_usage_attribution.py \
+       tests/run_agent/test_provider_attribution_headers.py \
+       tests/run_agent/test_opencode_free_client_headers.py \
+       tests/hermes_cli/test_fireworks_provider.py tests/hermes_cli/test_gmi_provider.py \
+       tests/agent/test_anthropic_adapter.py tests/gateway/test_slack.py \
+       tests/plugins/model_providers/test_fireworks_profile.py -q
+# resultado del sync 2026-08-25: 371 passed, 0 failed
+```
+
+**Bug preexistente que esto destapó:** en `main`,
+`plugins/platforms/slack/adapter.py` ya usaba `IYARI/` pero
+`tests/gateway/test_slack.py` seguía afirmando `HermesAgent/` — el test estaba
+en rojo desde el sync anterior. Este sync lo deja coherente.
+
+## Hallazgo del sync (refuerza el gotcha de "contenido congelado")
+
+El sync anterior (v0.20.0, 2026-08-07) registró como padre del merge el tip de
+upstream del 6-ago, pero **el contenido de varios archivos se aplicó desde un
+snapshot anterior**. Medido: `hermes_state.py` tenía 8.904 líneas cuando el
+punto de sync declarado tenía 9.897 (y `hermes_state_{common,schema,search}.py`
+igual) — ~1.500 líneas de upstream que git creía incorporadas y no estaban.
+Ese desfase apareció en este sync disfrazado de "conflicto de lógica" (23 hunks
+en un solo archivo).
+
+**Cómo se detecta** (hacerlo en cada sync, es una línea):
+
+```bash
+MB=$(git merge-base HEAD upstream/main)
+git diff --stat $MB HEAD -- <archivo>   # borrados masivos = contenido congelado
+```
+
+**Cómo se resuelve**: tomar la versión íntegra de upstream (`git checkout
+--theirs`) y **reaplicar solo nuestras sustituciones de marca** extraídas del
+commit que las introdujo (pares `-/+` literales, no regex sobre el archivo
+completo). El resto de nuestro "diff" en esos archivos era upstream viejo, no
+valor propio — se verificó con `git merge-base --is-ancestor` que los commits
+`fix(db)`/`fix(cron)` de ese rango son de upstream, no nuestros.
+
+**Corolario para el próximo sync**: el mismo patrón apareció en 8 archivos más
+(`cli_commands_mixin.py`, `run_agent.py`, `tui_gateway/{server,methods_session}.py`,
+`conversation_compression.py`, 4 TSX de `apps/desktop/`) — todos eran el mismo
+cambio de upstream (#23254: `append_message` por fila → `append_messages_batch`
+en chunks). Cuando un "conflicto de lógica" no contiene marca ni comentarios
+nuestros, casi siempre es esto.

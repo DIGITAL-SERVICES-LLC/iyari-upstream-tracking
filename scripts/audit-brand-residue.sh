@@ -33,6 +33,7 @@ raw_hits() {
     --include="*.yml" --include="*.ts" --include="*.tsx" --include="*.json" . \
     2>/dev/null \
     | grep -v "_OFFICIAL_REPO_CANONICAL\|LICENSE\|\.venv\|node_modules\|README.md" \
+    | grep -v "^\(\./\)\?REBRAND-EXCEPTIONS\.md:\|^\(\./\)\?scripts/iyari_transform\.py:\|^\(\./\)\?scripts/check-sync-integrity\.py:\|^\(\./\)\?scripts/check-sync-frozen-content\.py:" \
     | sed -E 's/^(\.\/)?([^:]+):[0-9]+:/\2:/'
 }
 

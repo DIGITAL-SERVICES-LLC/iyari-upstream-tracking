@@ -122,6 +122,37 @@ efecto (para que el test no sea vacuo). Corre en segundos; si falla, es
 exactamente la regresión de 2026-07 (el script corriendo sin el flag) antes de
 que toque cientos de archivos reales, no después.
 
+**5. Gate de INTEGRIDAD del árbol, después de resolver los conflictos y antes
+de comitear.** Este gate faltaba y su ausencia es la causa de los "9 bugs de
+merge silencioso" del sync anterior. Un archivo puede quedar sintácticamente
+válido, pasar la auditoría de marca, y aun así llamar a un método que su
+archivo hermano —congelado en una versión vieja por un auto-merge incompleto—
+nunca definió. Eso es un `AttributeError` en producción que ningún grep de
+marca detecta.
+
+```bash
+python3 scripts/check-sync-frozen-content.py        # desalineados SIN marca propia
+python3 scripts/check-sync-frozen-content.py --fix  # los alinea con upstream
+python3 scripts/check-sync-integrity.py             # difs REALES neutralizando la marca
+```
+
+- `check-sync-frozen-content.py`: lista los archivos que difieren de upstream y
+  **no contienen ninguna marca nuestra**. Si no tenemos nada propio ahí, deben
+  ser byte-idénticos a upstream; si no lo son, están congelados. Antes de
+  aplicar `--fix`, comprobar con
+  `git log <merge-base>..origin/main --oneline -- <archivo>` que solo los
+  commits de sync lo tocaron (si aparece un commit de fase propio —Fase 1.1,
+  GRUPO 1-3— la diferencia es legítima y NO se toca).
+- `check-sync-integrity.py`: neutraliza la marca en ambos lados y muestra lo que
+  queda distinto de verdad. Sirve para separar "aportación propia legítima" de
+  "contenido congelado" sin que las diferencias de marca ensucien el diff.
+
+Caso real del sync 2026-08-25: detectó 16 archivos desalineados sin marca
+propia (`hermes_state_portability.py` entre ellos, que provocaba
+`AttributeError: 'SessionDB' object has no attribute
+'_get_session_rich_rows_batch'`). Alinearlos hizo caer los fallos del subconjunto
+dirigido de 7 a 2, y de esos 2 ninguno quedó por integridad.
+
 **Peligro conocido: NUNCA correr `hermes update` (sin `--check`) dentro de este
 checkout.** El 2026-08-03, durante este mismo sync, algo invocó el `hermes
 update` real (no `--check`) usando el `.venv` de este repo — como es una
