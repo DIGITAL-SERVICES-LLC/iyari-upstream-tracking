@@ -134,13 +134,15 @@ OpenAI Responses API format. Supports server-side conversation state via `previo
   "status": "completed",
   "model": "hermes-agent",
   "output": [
-    {"type": "function_call", "name": "terminal", "arguments": "{\"command\": \"ls\"}", "call_id": "call_1"},
-    {"type": "function_call_output", "call_id": "call_1", "output": "README.md src/ tests/"},
+    {"type": "function_call", "status": "completed", "name": "terminal", "arguments": "{\"command\": \"ls\"}", "call_id": "call_1"},
+    {"type": "function_call_output", "status": "completed", "call_id": "call_1", "output": "README.md src/ tests/"},
     {"type": "message", "role": "assistant", "content": [{"type": "output_text", "text": "Your project has..."}]}
   ],
   "usage": {"input_tokens": 50, "output_tokens": 200, "total_tokens": 250}
 }
 ```
+
+Tool calls in the `output` array were already executed server-side by the IYARI agent — they are replayed with `"status": "completed"` for structured tool UI, never as pending calls for the client to execute.
 
 **Inline image input:** `input[].content` can contain `input_text` and `input_image` parts. Both remote URLs and `data:image/...` URLs are supported:
 
@@ -199,12 +201,12 @@ Delete a stored response.
 Lists the agent as an available model. The advertised model name defaults to the [profile](/user-guide/profiles) name (or `hermes-agent` for the default profile). Required by most frontends for model discovery.
 
 `/v1/models` is intentionally the cheap OpenAI-compat surface. It does **not**
-enumerate every authenticated provider/model combination Hermes can route to,
+enumerate every authenticated provider/model combination IYARI can route to,
 and it does not do pricing or capability enrichment.
 
 ### GET /api/model/options
 
-Hermes-aware clients can request the same curated provider/model inventory used
+IYARI-aware clients can request the same curated provider/model inventory used
 by the dashboard and TUI. This route uses the API server's normal bearer
 authentication and returns provider rows, model capability hints, and pricing
 metadata that do not belong in the OpenAI-compatible `/v1/models` response:
@@ -219,7 +221,7 @@ That payload is the same substrate the dashboard Models page and the TUI
 `model.options` RPC use. It returns authenticated providers, curated model
 lists, per-model pricing, and model capability hints.
 
-Normal opens are intentionally conservative for custom providers: Hermes probes
+Normal opens are intentionally conservative for custom providers: IYARI probes
 only the **currently selected** custom endpoint so a stale or offline saved
 endpoint does not block the picker. An explicit refresh flips to full probing
 and busts the provider model cache:
@@ -232,7 +234,7 @@ curl \
 
 Use `/v1/models` when an OpenAI-compatible client only needs a model name to
 send back in chat/responses requests. Use `/api/model/options` when an
-authenticated UI needs the richer Hermes-specific picker metadata.
+authenticated UI needs the richer IYARI-specific picker metadata.
 
 ### GET /v1/capabilities
 
@@ -257,13 +259,102 @@ Returns a machine-readable description of the API server's stable surface for ex
 
 Use this endpoint when integrating dashboards, browser UIs, or control planes so they can discover whether the running IYARI version supports runs, streaming, cancellation, and session continuity without depending on private Python internals.
 
+## Browser-extension control
+
+IYARI can route browser tools through an authenticated extension that controls
+the browser session associated with the current IYARI session. The feature is
+disabled by default; set `browser.extension_control.enabled` to `true` to opt in:
+
+```yaml
+browser:
+  extension_control:
+    enabled: true
+```
+
+The local API path also requires the API server bearer key. A controller may
+register only for an existing server session. IYARI derives the controller
+principal from authenticated server state; a client-supplied `principal_id` is
+ignored.
+
+Discover the live contract through `GET /v1/capabilities`. The
+`browser_extension_control` object reports whether the feature is enabled, the
+protocol version, transport names, and the exact capability allowlist:
+
+```text
+controller.noop
+browser_back
+browser_click
+browser_navigate
+browser_press
+browser_screenshot
+browser_scroll
+browser_snapshot
+browser_tab_activate
+browser_tabs
+browser_type
+```
+
+Requested capabilities outside that list are filtered out. Raw CDP, arbitrary
+script evaluation, console access, uploads, image extraction, and vision are not
+part of the controller protocol.
+
+When a request has no bound controller identity, or when the feature is disabled,
+IYARI preserves the existing browser backend. Once the gateway binds a
+controller principal and transport family to the request, that extension lane
+is authoritative: missing, ambiguous, disconnected, or incapable controllers
+fail closed instead of silently switching to a different local/cloud browser.
+After an exact controller is selected, its result or error is authoritative and
+IYARI never retries the same action through another backend.
+
+### Local API registration
+
+1. Send an authenticated `POST /v1/browser-control/register` with
+   `protocol_version`, `session_id`, `controller_id`, `browser_profile_id`, and
+   the requested `capabilities`.
+2. IYARI returns a single-use ticket with a 30-second TTL and the filtered,
+   server-bound controller scope.
+3. Open `GET /v1/browser-control/ws` with both WebSocket subprotocols:
+   `hermes-browser-control-v1` and
+   `hermes-browser-control-ticket.<ticket>`.
+
+The ticket is never accepted in the query string. Unknown, expired, reused, or
+malformed tickets fail before WebSocket upgrade.
+
+### Controller frames
+
+IYARI sends `browser.controller.command` frames containing `command_id`,
+`action`, immutable `arguments`, browser/controller ids, and the originating
+`tool_call_id`. The controller replies with `browser.controller.result`, the
+same `command_id`, an exact boolean `ok`, and either `result` or `error`.
+Cancellation and timeout emit `browser.controller.cancel`; late results are
+ignored.
+
+An unexpected socket loss marks the controller offline and preserves work
+already in flight until each command's original deadline. A reconnect with the
+same principal, profile, session, controller id, browser profile, and transport
+identity refreshes the transport without admitting new work before any deferred
+cancels are flushed. Negotiated capabilities may change on that reconnect; they
+are not an identity field. A different controller id or browser profile in the
+same authenticated session lane is a hard replacement: old pending work is
+cancelled before the successor becomes routable. Send
+`browser.controller.detach` on the authenticated controller transport for an
+intentional hard detach — that immediately cancels pending work. Merely closing
+the socket is treated as a recoverable disconnect.
+
+The authenticated dashboard transport exposes the same registration, result,
+heartbeat, capability, and ownership semantics over its Gateway RPC/event
+channel. In both transports, selection requires one unambiguous exact match on
+principal, profile, session, controller, browser profile, transport family, and
+capability. Once selected, a controller failure is authoritative and is never
+retried through a different browser backend.
+
 ## Per-request model selection
 
-Authenticated clients can override Hermes' default model selection per request
+Authenticated clients can override IYARI's default model selection per request
 by sending:
 
 - `model` — the target model id for this turn
-- `provider` — the Hermes provider slug to resolve credentials/runtime for this turn
+- `provider` — the IYARI provider slug to resolve credentials/runtime for this turn
 - `model_options` — request-scoped reasoning / service-tier controls
 
 The same request fields are accepted on:
@@ -284,7 +375,7 @@ Precedence is deterministic:
 
 `model_options` stays request-scoped regardless of which model/provider wins.
 If a request sends a `provider` that conflicts with a configured `model_routes`
-alias, Hermes rejects the request with `400` instead of silently remixing route
+alias, IYARI rejects the request with `400` instead of silently remixing route
 credentials with another provider.
 
 **Bare `model` values on the OpenAI-compatible endpoints are opt-in.** Generic
@@ -300,7 +391,7 @@ gateway:
       direct_model_requests: true
 ```
 
-Requests that include an explicit `provider` — and the Hermes-native
+Requests that include an explicit `provider` — and the IYARI-native
 `/v1/runs` and session-chat endpoints — always honor the requested model
 regardless of this flag.
 
@@ -658,7 +749,7 @@ In Open WebUI, add each as a separate connection. The model dropdown shows `alic
 - **Response storage** — stored responses (for `previous_response_id`) are persisted in SQLite and survive gateway restarts. Max 100 stored responses (LRU eviction).
 - **No file upload** — inline images are supported on both `/v1/chat/completions` and `/v1/responses`, but uploaded files (`file`, `input_file`, `file_id`) and non-image document inputs are not supported through the API.
 - **Simple OpenAI clients still see an alias** — `/v1/models` advertises the
-  stable Hermes alias (`hermes-agent` or the active profile name). Richer
+  stable IYARI alias (`hermes-agent` or the active profile name). Richer
   clients can send explicit `provider` / `model_options` overrides on requests.
 
 ## Proxy Mode
