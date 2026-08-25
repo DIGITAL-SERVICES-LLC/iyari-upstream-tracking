@@ -921,7 +921,7 @@ def build_anthropic_client(
         kwargs["default_headers"] = {
             "HTTP-Referer": "https://hermes-agent.nousresearch.com",
             "X-Title": "IYARI",
-            "User-Agent": f"HermesAgent/{_HERMES_VERSION}",
+            "User-Agent": f"IYARI/{_HERMES_VERSION}",
             **( {"anthropic-beta": ",".join(common_betas)} if common_betas else {} )
         }
     elif _requires_bearer_auth(normalized_base_url):
@@ -968,7 +968,7 @@ def build_anthropic_client(
         headers = dict(kwargs.get("default_headers") or {})
         headers.setdefault("HTTP-Referer", "https://hermes-agent.nousresearch.com")
         headers.setdefault("X-Title", "IYARI")
-        headers.setdefault("User-Agent", f"HermesAgent/{_HERMES_VERSION}")
+        headers.setdefault("User-Agent", f"IYARI/{_HERMES_VERSION}")
         kwargs["default_headers"] = headers
 
     client = _anthropic_sdk.Anthropic(**kwargs)

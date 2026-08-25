@@ -24,8 +24,6 @@ from typing import Any, Callable, Collection
 
 from agent.interrupt_compat import request_hard_interrupt
 
-from agent.interrupt_compat import request_hard_interrupt
-
 
 def now_ns() -> int:
     return time.perf_counter_ns()

@@ -108,7 +108,7 @@ def test_fireworks_applies_attribution_via_profile_fallback(mock_openai):
     headers = agent._client_kwargs["default_headers"]
     assert headers["HTTP-Referer"] == "https://hermes-agent.nousresearch.com"
     assert headers["X-Title"] == "IYARI"
-    assert headers["User-Agent"].startswith("HermesAgent/")
+    assert headers["User-Agent"].startswith("IYARI/")
 
 
 @patch("run_agent.OpenAI")
@@ -132,7 +132,7 @@ def test_opencode_go_applies_attribution_via_profile_fallback(mock_openai):
     headers = agent._client_kwargs["default_headers"]
     assert headers["HTTP-Referer"] == "https://hermes-agent.nousresearch.com"
     assert headers["X-Title"] == "IYARI"
-    assert headers["User-Agent"].startswith("HermesAgent/")
+    assert headers["User-Agent"].startswith("IYARI/")
 
 
 @patch("run_agent.OpenAI")
@@ -153,7 +153,7 @@ def test_opencode_zen_applies_attribution_via_profile_fallback(mock_openai):
     headers = agent._client_kwargs["default_headers"]
     assert headers["HTTP-Referer"] == "https://hermes-agent.nousresearch.com"
     assert headers["X-Title"] == "IYARI"
-    assert headers["User-Agent"].startswith("HermesAgent/")
+    assert headers["User-Agent"].startswith("IYARI/")
 
 
 @patch("run_agent.OpenAI")

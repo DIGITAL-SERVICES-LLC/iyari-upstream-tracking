@@ -21,8 +21,8 @@ from providers.base import ProviderProfile
 _KEYLESS_HEADERS = {
     "Authorization": "",
     "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-    "X-Title": "Hermes Agent",
-    "User-Agent": f"HermesAgent/{_HERMES_VERSION}",
+    "X-Title": "IYARI",
+    "User-Agent": f"IYARI/{_HERMES_VERSION}",
 }
 
 

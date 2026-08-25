@@ -5474,7 +5474,7 @@ def opencode_zen_free_headers() -> dict:
         "Authorization": "",
         "HTTP-Referer": "https://hermes-agent.nousresearch.com",
         "X-Title": "IYARI",
-        "User-Agent": f"HermesAgent/{_v}",
+        "User-Agent": f"IYARI/{_v}",
     }
 
 

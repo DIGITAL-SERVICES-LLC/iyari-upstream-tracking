@@ -1063,6 +1063,16 @@ class TestPreToolCallDirective:
             )
         ]
 
+    def test_approve_directive_returned(self, monkeypatch):
+        from hermes_cli.plugins import get_pre_tool_call_directive
+        monkeypatch.setattr(
+            "hermes_cli.plugins.invoke_hook",
+            lambda hook_name, **kwargs: [
+                {"action": "approve", "message": "needs human ok"}
+            ],
+        )
+        assert get_pre_tool_call_directive("write_file", {}) == (
+            "approve", "needs human ok")
 
     def test_approve_without_message_is_valid(self, monkeypatch):
         """approve may omit a message (block may not)."""

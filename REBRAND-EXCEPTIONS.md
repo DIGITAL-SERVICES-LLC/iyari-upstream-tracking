@@ -412,7 +412,6 @@ no re-deducirlos el próximo:
 
 | Caso | Por qué |
 |---|---|
-| `"User-Agent": f"HermesAgent/{_HERMES_VERSION}"` (`run_agent.py`) | Identificador funcional con whitelist de proveedor: el comentario de upstream dice literalmente que es el UA que **RouterMint necesita para evitar bloqueos Cloudflare 1010**. Nuestra versión previa lo tenía como `IYARI/{ver}`; upstream lo cambió a `HermesAgent/`. **Se sigue a upstream**: cambiar el string puede reactivar el bloqueo y el valor no lo ve ningún usuario |
 | `Hermes Cloud` + "runs hosted Hermes Agent instances" | Servicio de terceros de Nous (como Nous Portal). Las instancias que ejecuta Nous SON Hermes, no IYARI |
 | "you allow/authorize Nous Research to charge your card" (`hermes_cli/cli_billing_mixin.py`) | Factual: quien cobra en el flujo del Portal es Nous Research, no nosotros. Cambiarlo sería una afirmación falsa (mismo criterio que el gotcha de partnerships) |
 | `"Nous Research Hermes 3 & 4 models are NOT agentic..."` (`hermes_cli/model_switch.py`, `cli.py`) | Familia de modelos real + advertencia oficial del Portal |
@@ -448,6 +447,62 @@ hay que repetir): mirar la versión previa del archivo en `origin/main` —
   con los tests de esa zona, que comparan los literales).
 
 Resultado del sync: 131 archivos barridos (549 líneas), 882 diferidos.
+
+## Política de HEADERS DE ATRIBUCIÓN (resuelta con evidencia, sync 2026-08-25)
+
+Este fue el punto más delicado del sync. La regla no se dedujo: se leyó del
+propio repo. `origin/main:tests/run_agent/test_provider_attribution_headers.py`
+líneas 48 y 66 ya afirmaban `IYARI/` **antes** de este sync, y
+`agent/auxiliary_client.py` ya tenía `X-Title: "IYARI"` y
+`X-BILLING-INVOKE-ORIGIN: "IYARI"` desde Fase 0.4.
+
+**Regla:**
+
+| Header | Valor | Motivo |
+|---|---|---|
+| `X-Title` | `IYARI` | Es marca VISIBLE: OpenRouter/OpenCode lo muestran como nombre de la app en su dashboard |
+| `User-Agent` de proveedores (ai-gateway, routermint, fireworks, opencode-zen/free/go, gmi, xai, kimi-coding, anthropic, slack) | `IYARI/<ver>` | Coherencia con lo que el fork ya tenía; los tests del fork lo afirman |
+| `X-BILLING-INVOKE-ORIGIN` | `IYARI` | Ídem |
+| `codex_cli_rs/0.0.0 (IYARI)` | `IYARI` | El fork ya lo tenía así |
+
+**EXCEPCIÓN — familia codex (`_codex_cloudflare_headers` en
+`agent/auxiliary_client.py`):**
+
+| Header | Valor | Motivo |
+|---|---|---|
+| `User-Agent` | `HermesAgent/<ver>` | **Nueva de upstream**, el fork nunca la tuvo. Upstream la estandarizó con **19 asserts** en `tests/agent/test_codex_cloudflare_headers.py` y `test_codex_usage_attribution.py`. Es invisible al usuario y convertirla obliga a divergir en 19 asserts que conflictuarán en cada sync |
+| `originator` | `hermes-agent` | Identificador de protocolo que OpenAI reconoce (minúscula) |
+| `HTTP-Referer` | `https://hermes-agent.nousresearch.com` | URL de servicio |
+
+**Cómo se resolvió (repetir esto en el próximo sync):** no adivinar. Para cada
+header, mirar las 3 versiones —
+
+```bash
+grep -n '"X-Title"\|User-Agent' <archivo>                    # ahora
+git show origin/main:<archivo> | grep -n '"X-Title"\|User-Agent'   # politica del fork
+git show upstream/main:<archivo> | grep -n '"X-Title"\|User-Agent' # upstream
+```
+
+Si el fork ya lo tenía en IYARI → IYARI y se adapta el assert nuevo de upstream
+(1 línea). Si es nuevo de upstream y trae una batería de asserts → se sigue a
+upstream y se documenta aquí. **Y siempre correr los tests de atribución
+después**, porque código y test tienen que contar la misma historia:
+
+```bash
+pytest tests/agent/test_codex_cloudflare_headers.py \
+       tests/agent/test_codex_usage_attribution.py \
+       tests/run_agent/test_provider_attribution_headers.py \
+       tests/run_agent/test_opencode_free_client_headers.py \
+       tests/hermes_cli/test_fireworks_provider.py tests/hermes_cli/test_gmi_provider.py \
+       tests/agent/test_anthropic_adapter.py tests/gateway/test_slack.py \
+       tests/plugins/model_providers/test_fireworks_profile.py -q
+# resultado del sync 2026-08-25: 371 passed, 0 failed
+```
+
+**Bug preexistente que esto destapó:** en `main`,
+`plugins/platforms/slack/adapter.py` ya usaba `IYARI/` pero
+`tests/gateway/test_slack.py` seguía afirmando `HermesAgent/` — el test estaba
+en rojo desde el sync anterior. Este sync lo deja coherente.
 
 ## Hallazgo del sync (refuerza el gotcha de "contenido congelado")
 

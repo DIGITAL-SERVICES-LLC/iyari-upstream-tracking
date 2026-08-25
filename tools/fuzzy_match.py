@@ -197,18 +197,6 @@ def fuzzy_find_and_replace(content: str, old_string: str, new_string: str,
                     f"exact/line-trimmed match can be made."
                 )
 
-            # replace_all with a similarity-based strategy would overwrite
-            # every approximately-matching block, not just exact ones — refuse
-            # and make the caller narrow old_string to something a precise
-            # strategy can match exactly.
-            if replace_all and len(matches) > 1 and strategy_name in _SIMILARITY_STRATEGIES:
-                return content, 0, None, (
-                    f"Found {len(matches)} approximate matches via the "
-                    f"'{strategy_name}' strategy; replace_all only applies to exact "
-                    f"matches. Provide the precise text (whitespace included) so an "
-                    f"exact/line-trimmed match can be made."
-                )
-
             # Escape-drift guard: when the matched strategy is NOT `exact`,
             # we matched via some form of normalization. If new_string
             # contains shell/JSON-style escape sequences (\' or \") that

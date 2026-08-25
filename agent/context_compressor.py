@@ -4115,6 +4115,9 @@ class ContextCompressor(ContextEngine):
                 session_db.archive_and_compact(
                     session_id,
                     pruned_msgs,
+                    model_config_patch={
+                        PROACTIVE_PRUNE_REARM_MODEL_CONFIG_KEY: next_rearm_tokens,
+                    },
                 )
             except Exception as exc:
                 logger.warning(

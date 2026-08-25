@@ -66,75 +66,6 @@ CONTRIBUTING.md:curl -fsSL https://hermes-agent.nousresearch.com/install.sh | ba
 CONTRIBUTING.md:├── website/                  # Documentation site (hermes-agent.nousresearch.com)
 README.es.md:Creado originalmente por [Nous Research](https://nousresearch.com/). Fork mantenido por **Digital Services LLC** — © 2026.
 README.es.md:IYARI es un fork de [Hermes Agent](https://github.com/NousResearch/hermes-agent), creado originalmente por Nous Research, y desarrollado y mantenido de forma independiente por Digital Services LLC bajo la licencia MIT.
-REBRAND-EXCEPTIONS.md:     Nous Research's subscription gateway — 300+ models...`
-REBRAND-EXCEPTIONS.md:     by Nous Research..."` → `by Digital Services LLC...`
-REBRAND-EXCEPTIONS.md:     created by Nous Research.` → `by Digital Services LLC.` y `You are IYARI, an
-REBRAND-EXCEPTIONS.md:     family...`, `it's the official guidance from Nous Research.`
-REBRAND-EXCEPTIONS.md:     intelligent AI assistant created by Nous Research.` → `by Digital Services
-REBRAND-EXCEPTIONS.md:     unified subscription gateway...`, `Nous Research's own **Hermes 4**
-REBRAND-EXCEPTIONS.md:   - `integrations/nous-portal.md` (+zh): `[Nous Portal](...) is Nous Research's
-REBRAND-EXCEPTIONS.md:   - `integrations/providers.md` (+zh): `[Nous Portal](...) is Nous Research's
-REBRAND-EXCEPTIONS.md:   `guides/run-nemotron-3-ultra-free.md`: `Nous Research has been inducted into
-REBRAND-EXCEPTIONS.md:   `user-guide/egress/iron-proxy.md`: `# ... and Nous Research.` (comentario de
-REBRAND-EXCEPTIONS.md:   `|` + `Nous Research` (tabla de metadata al principio de cada skill doc).
-REBRAND-EXCEPTIONS.md:   agent framework by Nous Research..."` → `by Digital Services LLC...` /
-REBRAND-EXCEPTIONS.md:   es un servicio operado por Nous Research; decir que es "Nous Research's
-REBRAND-EXCEPTIONS.md:   the Nemotron Coalition...` — es una noticia sobre Nous Research como empresa,
-REBRAND-EXCEPTIONS.md:   zh: `IYARI 是 Nous Research 开发的开源 AI agent 框架` → `IYARI 是 Digital
-REBRAND-EXCEPTIONS.md:"Nous Research fue admitida en la Nemotron Coalition (NVIDIA) y se asoció con
-REBRAND-EXCEPTIONS.md:"Nous Research", mira aquí primero.**
-REBRAND-EXCEPTIONS.md:# REBRAND-EXCEPTIONS — guía de referencia para "Nous Research" en la doc
-REBRAND-EXCEPTIONS.md:## "Nous Research" que SIEMPRE se convierte a "Digital Services LLC"
-REBRAND-EXCEPTIONS.md:## "Nous Research" que SIEMPRE se preserva (NO tocar)
-REBRAND-EXCEPTIONS.md:## Gotcha recurrente (grave): hechos históricos/partnerships de Nous Research NO
-REBRAND-EXCEPTIONS.md:("Nous Research" → "Digital Services LLC") se convierte.
-REBRAND-EXCEPTIONS.md:- **Built on a model-trainer foundation** — Originally built by [Nous Research](https://nousresearch.com), the lab behind Hermes, Nomos, and Psyche. Now maintained by Digital Services LLC as IYARI. Works with [Nous Portal](https://portal.nousresearch.com), [OpenRouter](https://openrouter.ai), OpenAI, or any endpoint
-REBRAND-EXCEPTIONS.md:- **Research-ready** — Batch processing, trajectory export, RL training with Atropos. Originally built by [Nous Research](https://nousresearch.com) — the lab behind Hermes, Nomos, and Psyche models. Now maintained by Digital Services LLC as IYARI
-REBRAND-EXCEPTIONS.md:- **基于模型训练者的基础** — 最初由 [Nous Research](https://nousresearch.com) 构建，该实验室是 Hermes、Nomos 和 Psyche 背后的团队，现由 Digital Services LLC 以 IYARI 之名维护。支持 [Nous Portal](https://portal.nousresearch.com)、[OpenRouter](https://openrouter.ai)、OpenAI 或任意端点
-REBRAND-EXCEPTIONS.md:- **研究就绪** — 批处理、轨迹导出、基于 Atropos 的 RL 训练。最初由 [Nous Research](https://nousresearch.com) 构建——该实验室是 Hermes、Nomos 和 Psyche 模型背后的团队，现由 Digital Services LLC 以 IYARI 之名维护
-REBRAND-EXCEPTIONS.md:3. **Listas de proveedores de IA de terceros que incluyen "Nous Research" como
-REBRAND-EXCEPTIONS.md:4. **Copy de botón/enlace OAuth "Sign in with Nous Research"** en el flujo de
-REBRAND-EXCEPTIONS.md:Agent"/"Nous Research" como frases exactas sin convertir — no detecta "Hermes"
-REBRAND-EXCEPTIONS.md:Nous Research has been inducted into the **Nemotron Coalition** of leading AI
-REBRAND-EXCEPTIONS.md:Nous Research tiene un canal de Discord (`#plugins-skills-and-skins`) que
-REBRAND-EXCEPTIONS.md:Ultra** free on [Nous Portal](https://portal.nousresearch.com) for two weeks
-REBRAND-EXCEPTIONS.md:`### Default provider: Nous Research` genera el slug `#default-provider-nous-
-REBRAND-EXCEPTIONS.md:`Hermes-3`/`Hermes-4` (modelo LLM real), URLs `nousresearch.com` y subdominios,
-REBRAND-EXCEPTIONS.md:`grep -n "Nous Research Discord\|discord.gg/nousresearch"` en cada sync futuro,
-REBRAND-EXCEPTIONS.md:`link.description`) — 4 archivos con "Hermes Agent" sin convertir sobrevivieron
-REBRAND-EXCEPTIONS.md:algo que Nous Research hizo de verdad (un partnership, un anuncio, un logro,
-REBRAND-EXCEPTIONS.md:colaboración, evento o logro histórico específico de Nous Research corre el
-REBRAND-EXCEPTIONS.md:del transformador convertiría ciegamente TODAS las "Nous Research" a
-REBRAND-EXCEPTIONS.md:grep -rln "Hermes Agent\|Nous Research" website/docs/ website/i18n/ locales/ --include="*.json"
-REBRAND-EXCEPTIONS.md:intento de arreglo tampoco bastó: revertir solo el sujeto ("Nous Research has
-REBRAND-EXCEPTIONS.md:la pregunta correcta no es "¿dice Nous Research?" sino **"¿esta frase describe
-REBRAND-EXCEPTIONS.md:lo primero, "Nous Research" se preserva como sujeto del hecho **en toda la
-REBRAND-EXCEPTIONS.md:lote, ver `CLAUDE.md`. Este archivo se centra solo en "Nous Research" — el caso que
-REBRAND-EXCEPTIONS.md:nunca vuelve a convertir "Nous Research" ciegamente (la regresión de 2026-07).
-REBRAND-EXCEPTIONS.md:| "connects your **local** Hermes Agent" | `website/docs/guides/manage-hermes-cloud-with-mcp.md` | → `your local IYARI` (el agente local ES nuestro producto) | misma página ya decía "IYARI gets two tools" |
-REBRAND-EXCEPTIONS.md:| "you allow/authorize Nous Research to charge your card" (`hermes_cli/cli_billing_mixin.py`) | Factual: quien cobra en el flujo del Portal es Nous Research, no nosotros. Cambiarlo sería una afirmación falsa (mismo criterio que el gotcha de partnerships) |
-REBRAND-EXCEPTIONS.md:| `"Continue with Nous Research" button` | `"Continue with Digital Services LLC" button` |
-REBRAND-EXCEPTIONS.md:| `"Nous Research Hermes 3 & 4 models are NOT agentic..."` (`hermes_cli/model_switch.py`, `cli.py`) | Familia de modelos real + advertencia oficial del Portal |
-REBRAND-EXCEPTIONS.md:| `"X-Title": "Hermes Agent"` | `agent/anthropic_adapter.py` (x2), `hermes_cli/models.py` | → `"X-Title": "IYARI"` | `agent/auxiliary_client.py` y `plugins/image_gen/openrouter` ya usaban `"IYARI"` desde Fase 0.4 |
-REBRAND-EXCEPTIONS.md:| `"You run on IYARI (by Nous Research)"` | `agent/prompt_builder.py:176` | → `by Digital Services LLC` | líneas 151/161 del mismo archivo ya lo decían así. **Regresión de identidad real**: upstream reintrodujo el sujeto en una constante nueva (`HERMES_AGENT_HELP_GUIDANCE_NO_SKILLS`) que se auto-mergeó sin conflicto |
-REBRAND-EXCEPTIONS.md:| `### Default provider: Nous Research` | `### Default provider: Digital Services LLC` |
-REBRAND-EXCEPTIONS.md:| `#### Worked example: Nous Research` | `#### Worked example: Digital Services LLC` |
-REBRAND-EXCEPTIONS.md:| `(e.g. *Sign in with Nous Research*)` (desktop.md) | `(e.g. *Sign in with Digital Services LLC*)` |
-REBRAND-EXCEPTIONS.md:| `*Sign in with Nous Research*` (cursiva) | `*Sign in with Digital Services LLC*` |
-REBRAND-EXCEPTIONS.md:| `Click **Sign in with Nous Research**` | `Click **Sign in with Digital Services LLC**` |
-REBRAND-EXCEPTIONS.md:| `Hermes Cloud` + "runs hosted Hermes Agent instances" | Servicio de terceros de Nous (como Nous Portal). Las instancias que ejecuta Nous SON Hermes, no IYARI |
-REBRAND-EXCEPTIONS.md:| `VOCAB = "IYARI, Teknium, Nous Research, kanban"` | Ejemplo de vocabulario de transcripción (Whisper); ya venía mezclado así |
-REBRAND-EXCEPTIONS.md:| `[Default provider: Nous Research](#default-provider-nous-research)` | `[Default provider: Digital Services LLC](#default-provider-digital-services-llc)` |
-REBRAND-EXCEPTIONS.md:| `[Nous Research provider](#default-provider-nous-research)` | `[Digital Services LLC provider](#default-provider-digital-services-llc)` |
-REBRAND-EXCEPTIONS.md:| `[Nous Research](#default-provider-nous-research)` (link corto) | `[Digital Services LLC](#default-provider-digital-services-llc)` |
-REBRAND-EXCEPTIONS.md:| `developer-guide/plugins/index.md` | `Promote it in the Nous Research Discord \`#plugins-skills-and-skins\` channel.` | `Promote it on [IYARI on GitHub](https://github.com/digital-services-llc/iyari).` |
-REBRAND-EXCEPTIONS.md:| `developer-guide/secret-source-plugin.md` | `...share it in the Nous Research Discord (\`#plugins-skills-and-skins\`).` | `...share it on [IYARI on GitHub](https://github.com/digital-services-llc/iyari).` |
-REBRAND-EXCEPTIONS.md:| `gateway.nousresearch.com`, `portal.nousresearch.com`, `hermes-agent.nousresearch.com`, `nousresearch.github.io` | URLs de servicio y de docs; romperían llamadas |
-REBRAND-EXCEPTIONS.md:| `reference/faq.md` (+zh) | `2. **Ask the community:** [Nous Research Discord](https://discord.gg/nousresearch)` | `2. **Ask the community:** [IYARI on GitHub](https://github.com/digital-services-llc/iyari) or write to team@iyari.io` |
-REBRAND-EXCEPTIONS.md:| `sign in from the app with **Sign in with Nous Research**` (desktop.md) | `**Sign in with Digital Services LLC**` |
-REBRAND-EXCEPTIONS.md:| `text.replace("Nous Research", "Anthropic")` (`agent/anthropic_adapter.py`) | Sanitizer del OAuth de Claude Code: **debe** contener el literal viejo Y `"Digital Services LLC"` (ambos están). No es marca, es una lista de limpieza |
-REBRAND-EXCEPTIONS.md:| `user-guide/secrets/index.md` | `...share them in the Nous Research Discord (\`#plugins-skills-and-skins\`).` | `...share them on [IYARI on GitHub](https://github.com/digital-services-llc/iyari).` |
-REBRAND-EXCEPTIONS.md:| `| Author | Nous Research |` en fichas de skill | `website/docs/.../productivity-{pdf,docx,xlsx,powerpoint,google-workspace}.md` | → `Digital Services LLC` | `blender-mcp.md` (`... + IYARI`) y `skill-authoring.md` (`Author: IYARI`) |
 SECURITY.es.md:   Hermes Agent no modela capacidades por llamador dentro de un único adaptador.
 SECURITY.es.md:  Hermes Agent ha documentado una postura sobre cómo su salida debe ser
 SECURITY.es.md:  contrariamente a lo que esta política, la propia documentación de Hermes Agent o
@@ -499,9 +430,7 @@ plugins/dashboard_auth/nous/plugin.yaml:description: "Dashboard auth provider �
 plugins/model-providers/ai-gateway/__init__.py:        "HTTP-Referer": "https://hermes-agent.nousresearch.com",
 plugins/model-providers/commandcode/plugin.yaml:author: Nous Research
 plugins/model-providers/fireworks/__init__.py:        "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-plugins/model-providers/fireworks/__init__.py:        "X-Title": "Hermes Agent",
 plugins/model-providers/kimi-coding/__init__.py:        "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-plugins/model-providers/kimi-coding/__init__.py:        "X-Title": "Hermes Agent",
 plugins/model-providers/meta-ai/__init__.py:"""Meta Model API (Muse Spark) provider plugin for Hermes Agent.
 plugins/model-providers/nous/__init__.py:    base_url="https://inference-api.nousresearch.com/v1",
 plugins/model-providers/nous/__init__.py:    description="Nous Research — Hermes model family",
@@ -509,9 +438,7 @@ plugins/model-providers/nous/__init__.py:    display_name="Nous Research",
 plugins/model-providers/nous/__init__.py:    signup_url="https://nousresearch.com/",
 plugins/model-providers/nous/plugin.yaml:description: Nous Research Portal
 plugins/model-providers/opencode-free/__init__.py:    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-plugins/model-providers/opencode-free/__init__.py:    "X-Title": "Hermes Agent",
 plugins/model-providers/opencode-zen/__init__.py:    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-plugins/model-providers/opencode-zen/__init__.py:    "X-Title": "Hermes Agent",
 plugins/model-providers/opencode-zen/__init__.py:# "OpenAI/Python x.y.z" User-Agent and can't tell the traffic is Hermes Agent.
 plugins/platforms/a2a/plugin.yaml:author: Nous Research
 plugins/platforms/discord/adapter.py:            "Docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/discord",
@@ -524,14 +451,6 @@ scripts/build_model_catalog.py:``https://hermes-agent.nousresearch.com/docs/api/
 scripts/contributor_audit.py:    "hermes@nousresearch.com",
 scripts/contributor_audit.py:    "noreply@nousresearch.com",
 scripts/contributor_audit.py:    "nousbot@nousresearch.com",
-scripts/iyari_transform.py:        s = re.sub(r'Nous Research', 'Digital Services LLC', s)
-scripts/iyari_transform.py:    #     No toca "nousresearch.com" (minuscula/sin espacio) ni "Nous Portal".
-scripts/iyari_transform.py:    # 0b) "Nous Research" (con espacio) -> Digital Services LLC.
-scripts/iyari_transform.py:    --skip-nous-research   NO aplica la regla "Nous Research" -> "Digital Services LLC"
-scripts/iyari_transform.py:    0b. Nous Research (con espacio)        -> Digital Services LLC   (salvo --skip-nous-research)
-scripts/iyari_transform.py:    1.  Hermes Agent                       -> IYARI                  (elimina "Agent")
-scripts/iyari_transform.py:    s = re.sub(r'Hermes Agent', 'IYARI', s)
-scripts/iyari_transform.py:Preservado (NO se toca): URLs nousresearch.com, comando/paquete `hermes` minuscula,
 scripts/release.py:                       "cursoragent@cursor.com", "hermes@nousresearch.com"}
 scripts/release.py:    "annguyen@nousresearch.com": "annguyenNous",  # PR #52844 co-author
 scripts/release.py:    "ben@nousresearch.com": "benbarclay",
@@ -713,7 +632,6 @@ skills/software-development/systematic-debugging/SKILL.md:author: Hermes Agent (
 skills/software-development/test-driven-development/SKILL.md:## Hermes Agent Integration
 skills/software-development/test-driven-development/SKILL.md:author: Hermes Agent (adapted from obra/superpowers)
 tests/agent/test_anthropic_adapter.py:            assert headers["HTTP-Referer"] == "https://hermes-agent.nousresearch.com"
-tests/agent/test_anthropic_adapter.py:            assert headers["X-Title"] == "Hermes Agent"
 tests/agent/test_auxiliary_client.py:            ("nous", "hermes-4", "https://inference-api.nousresearch.com/v1", "max_tokens"),
 tests/agent/test_auxiliary_client.py:            patch("agent.auxiliary_client._resolve_nous_runtime_api", return_value=("fresh-agent-key", "https://inference-api.nousresearch.com/v1")),
 tests/agent/test_auxiliary_client.py:        base_url="https://inference-api.nousresearch.com/v1",
@@ -724,8 +642,6 @@ tests/agent/test_auxiliary_client.py:        stale_client.base_url = "https://in
 tests/agent/test_auxiliary_main_first.py:        nous_client.base_url = "https://inference-api.nousresearch.com/v1"
 tests/agent/test_auxiliary_transport_autodetect.py:    ("https://inference-api.nousresearch.com/v1", False, "Nous"),
 tests/agent/test_billing_links.py:    assert is_nous_inference_route("", "https://inference-api.nousresearch.com/v1") is True
-tests/agent/test_codex_usage_attribution.py:        assert wire[-1].headers["user-agent"] == "codex_cli_rs/0.0.0 (Hermes Agent)"
-tests/agent/test_codex_usage_attribution.py:        if attributed else "codex_cli_rs/0.0.0 (Hermes Agent)"
 tests/agent/test_credential_pool.py:                    "inference_base_url": "https://inference.nousresearch.com/v1",
 tests/agent/test_credential_pool.py:                    "portal_base_url": "https://portal.nousresearch.com",
 tests/agent/test_credits_policy.py:                "https://inference-api.nousresearch.com": {
@@ -785,7 +701,6 @@ tests/hermes_cli/test_dashboard_register.py:            return_value={"portal_ba
 tests/hermes_cli/test_dashboard_register.py:            url="https://portal.nousresearch.com/api/oauth/self-hosted-client",
 tests/hermes_cli/test_dashboard_register.py:    def _run(self, *, args, account_token="tok_abc", portal="https://portal.nousresearch.com",
 tests/hermes_cli/test_fireworks_provider.py:        assert headers["HTTP-Referer"] == "https://hermes-agent.nousresearch.com"
-tests/hermes_cli/test_fireworks_provider.py:        assert headers["X-Title"] == "Hermes Agent"
 tests/hermes_cli/test_model_catalog.py:    PRIMARY = "https://hermes-agent.nousresearch.com/docs/api/model-catalog.json"
 tests/hermes_cli/test_nous_auth_keepalive.py:            "base_url": "https://inference-api.nousresearch.com/v1",
 tests/hermes_cli/test_nous_auth_status_cache.py:against portal.nousresearch.com during one render. The cache is keyed
@@ -801,7 +716,6 @@ tests/hermes_cli/test_nous_portal_staging_allowlist.py:        staging_portal = 
 tests/hermes_cli/test_nous_portal_staging_allowlist.py:``HERMES_PORTAL_BASE_URL=https://portal.staging-nousresearch.com`` in its
 tests/hermes_cli/test_nous_reasoning_metadata.py:            "NOUS_INFERENCE_BASE_URL", "https://staging.nousresearch.com/v1"
 tests/hermes_cli/test_nous_reasoning_metadata.py:        assert nous_catalog_url() == "https://staging.nousresearch.com/v1/models"
-tests/hermes_cli/test_opencode_zen_free_keyless.py:        assert headers["X-Title"] == "Hermes Agent"
 tests/hermes_cli/test_proxy.py:                "base_url": "https://inference-api.nousresearch.com/v1",
 tests/hermes_cli/test_reasoning_caps_disk_cache.py:        base_url="https://inference-api.nousresearch.com"
 tests/hermes_cli/test_reasoning_caps_disk_cache.py:    monkeypatch.setenv("NOUS_INFERENCE_BASE_URL", "https://staging.nousresearch.com")
@@ -826,7 +740,6 @@ tests/plugins/test_chronos_verify.py:        jwks_or_key="https://portal.nousres
 tests/plugins/test_chronos_verify.py:    url = "https://portal.nousresearch.com/.well-known/jwks.json"
 tests/plugins/test_chronos_verify.py:ISS = "https://portal.nousresearch.com"
 tests/run_agent/test_anthropic_prompt_cache_policy.py:            base_url="https://inference-api.nousresearch.com/v1",
-tests/run_agent/test_opencode_free_client_headers.py:    assert headers.get("X-Title") == "Hermes Agent"
 tests/run_agent/test_primary_runtime_restore.py:            "anthropic_base_url": "https://inference-api.nousresearch.com/v1",
 tests/run_agent/test_primary_runtime_restore.py:            base_url="https://inference-api.nousresearch.com/v1",
 tests/run_agent/test_provider_attribution_headers.py:    assert headers["HTTP-Referer"] == "https://hermes-agent.nousresearch.com"

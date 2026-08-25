@@ -74,8 +74,8 @@ def test_opencode_free_sends_hermes_attribution(mock_openai):
         shared=False,
     )
     headers = _zen_call_headers(mock_openai)
-    assert headers.get("X-Title") == "Hermes Agent"
-    assert str(headers.get("User-Agent", "")).startswith("HermesAgent/")
+    assert headers.get("X-Title") == "IYARI"
+    assert str(headers.get("User-Agent", "")).startswith("IYARI/")
 
 
 @patch("run_agent.OpenAI")

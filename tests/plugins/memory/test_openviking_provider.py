@@ -116,8 +116,6 @@ def test_openviking_provider_config_loader_uses_readonly_config(monkeypatch):
     }
     assert config is not backing_config["memory"]["openviking"]
 
-    def load_config():
-        raise AssertionError("OpenViking config loader should use readonly config")
 
 def test_connection_settings_read_dashboard_config_file(tmp_path, monkeypatch):
     _clear_openviking_env(monkeypatch)

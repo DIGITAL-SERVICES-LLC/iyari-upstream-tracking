@@ -777,6 +777,7 @@ def _discover(
             # of cron rows are still in hand for the demotion pass below.
             offset=0,
             sort=sort,
+            fields=_DISCOVER_SEARCH_FIELDS,
         )
     except Exception as e:
         logging.error("FTS5 search failed: %s", e, exc_info=True)

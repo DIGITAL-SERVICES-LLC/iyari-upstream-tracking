@@ -1305,6 +1305,7 @@ class TestDelegateHeartbeat(unittest.TestCase):
             f"got {len(touch_calls)} touches",
         )
 
+
 class TestDelegationReasoningEffort(unittest.TestCase):
     """Tests for delegation.reasoning_effort config override."""
 
