@@ -382,6 +382,11 @@ de código Python (no solo docs), grepear primero `X-Hermes-\|X-Nous-` en el
 en seco buscando explícitamente `^-.*X-Hermes` antes de aplicar. Ver también
 `CLAUDE.md` — lista de headers ya encontrados.
 
+**Commit exacto donde se corrigió:** `5a761df307cea1b275ca3aa408c7eb2bfac86df3`
+("Fase 0.4: barrido de identificadores de marca residuales en codigo Python",
+2026-08-05, mergeado en PR #4 `feature/phase-0-4-brand-sweep`,
+commit de merge `23355d8406`).
+
 ## Identificadores funcionales que NUNCA se tocan (recordatorio, detalle completo en CLAUDE.md)
 
 `hermes` (comando/paquete en minúscula), `~/.hermes/`, `HERMES_*` (env vars),
