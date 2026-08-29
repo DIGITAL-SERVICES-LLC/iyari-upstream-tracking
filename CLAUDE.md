@@ -200,46 +200,42 @@ traceback real. Antes de dar la suite por buena: correr
 agrupados por patrón de error (como se hizo con los 1.134→98 de hoy), y recién
 entonces clasificar como regresión real vs entorno/dependencia faltante.
 
-**⚠️ PENDIENTE, NO RESUELTO (hermes_state.py — migración de esquema, NO tocar
-sin diseñarla primero):** `hermes_state.py` tiene 286 líneas de diff sin
-reconciliar contra `upstream/main` (nunca formó parte de Bloque A ni de ningún
-lote de rebranding; quedó "congelado" en el checkout automático del lote
-"seguro" — la 5ª vez que aparece este patrón hoy, ver la entrada dedicada en
-`REBRAND-EXCEPTIONS.md`). A diferencia de `tools/transcription_tools.py`
-(13 líneas, aplicado quirúrgicamente esta noche, sin riesgo — solo nuevas
-claves dentro de un blob JSON existente, sin tocar esquema), este diff **sí
-introduce columnas reales nuevas** en la tabla `sessions`
-(`last_activity_at`, `last_activity_description`, `last_activity_provenance`,
-usadas por los nuevos métodos `touch_session_activity` / `get_session_activity`
-/ `clear_session_activity_labels` / `session_yolo_enabled` / `set_session_yolo`).
+**✅ RESUELTO (2026-08-29) — hermes_state.py / migración de `last_activity_*`,
+la nota de abajo estaba desactualizada.** La entrada anterior (escrita a media
+sesión de sync, nunca actualizada tras terminar) decía que faltaba diseñar el
+`ALTER TABLE`. Verificado hoy con evidencia real que **ya no aplica**:
 
-Confirmado con evidencia real (no asumido):
-- `grep` de esos 3 nombres de columna contra `CREATE\|ALTER\|migration\|schema`
-  en nuestro `hermes_state.py` **y** en la copia de `upstream/main`: cero
-  resultados en ambos — ninguna de las dos versiones del archivo trae consigo
-  la migración que crea estas columnas (debe vivir en otro sitio del árbol de
-  upstream que no se ha localizado, o depende de un runner de migraciones que
-  no está en este archivo).
-- `sqlite3 ~/.hermes/state.db ".schema sessions"` en una base de datos de
-  desarrollo real: la tabla `sessions` **no tiene** ninguna columna
-  `last_activity_*`.
+- `touch_session_activity` / `get_session_activity` /
+  `clear_session_activity_labels` / `session_yolo_enabled` / `set_session_yolo`
+  **ya existen** en `hermes_state.py` (definidos, no solo llamados).
+- Las 3 columnas (`last_activity_at REAL`, `last_activity_description TEXT`,
+  `last_activity_provenance TEXT`, todas nullable, sin `NOT NULL`) **ya están
+  declaradas en `SCHEMA_SQL`** (`hermes_state_common.py`).
+- El mecanismo de migración que la nota anterior decía no haber localizado
+  **sí existe y ya está enganchado**: `_reconcile_columns()`
+  (`hermes_state_schema.py`), un sistema declarativo (patrón Beets/sqlite-utils)
+  que en cada arranque compara `PRAGMA table_info` contra `SCHEMA_SQL` y hace
+  `ALTER TABLE ADD COLUMN` de lo que falte — sin versionado manual. Mismo
+  mecanismo confirmado también en el repo de producto (`~/iyari-mvp`), aunque
+  ahí las 3 columnas y los 5 métodos todavía no existen (la función nunca se
+  portó a producción; las llamadas allí son defensivas vía `getattr(...,
+  None)`, así que hoy tampoco hay riesgo — simplemente no persiste el
+  heartbeat).
+- **Probado de punta a punta, no solo leído**: se construyó una base de datos
+  con el esquema viejo (las 3 columnas quitadas a mano de `SCHEMA_SQL`, fila
+  de sesión insertada), se abrió con `SessionDB` real → `_reconcile_columns()`
+  añadió las 3 columnas sola, y `touch_session_activity()` +
+  `get_session_activity()` funcionaron sobre esa sesión "vieja" sin error.
 
-Consecuencia si se aplica el fragmento de código sin la migración: cualquier
-llamada a `touch_session_activity` fallaría en tiempo de ejecución contra una
-base de datos existente (columna inexistente) — no es un bug sutil, sería
-inmediato. Y una base de datos real con sesiones ya guardadas necesitaría un
-`ALTER TABLE` explícito y versionado antes de poder correr ese código, no un
-simple `git checkout` del archivo.
-
-**No aplicar con la técnica quirúrgica de esta noche.** Los tests de
-`tests/test_hermes_state.py` (7 fallos) quedan clasificados como **"pendiente
-de migración de esquema"**, no como "arreglado" ni como "no-regresión, entorno"
-— es una categoría propia. Antes de tocar `hermes_state.py`: (1) localizar
-dónde vive realmente la migración de estas columnas en el árbol de upstream
-(puede que en un commit posterior al fetch usado hoy, o en un mecanismo de
-migración separado), (2) diseñar el `ALTER TABLE` para bases de datos
-existentes, (3) solo entonces aplicar el código. Dedicarle su propia sesión
-con calma, no la pieza final de una sesión ya larga.
+**Corrección sobre los 7 fallos de `tests/test_hermes_state.py`**: la nota
+anterior los atribuía a esta migración pendiente — **falso**, confirmado
+corriendo la suite: los 3 tests de `activity`/`yolo` pasan, y los 7 fallos
+reales son todos de `TestFTSExternalContentMigration`/
+`TestFTS5ToolCallMigration`/`TestConnectionLifecycle` (reconstrucción de
+índice FTS5, con errores tipo `table sqlite_master may not be modified` —
+huele a diferencia de versión de SQLite, no confirmado contra la baseline
+pre-sync). **Sigue sin investigar, pero es un hallazgo aparte, sin relación
+con `last_activity_*`/`session_yolo`.**
 
 **⚠️ PENDIENTE, NO RESUELTO (8 tests + 2 timeouts, sospecha fundada pero sin
 confirmar contra upstream):**
